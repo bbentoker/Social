@@ -13,12 +13,9 @@ return new class extends Migration
      */
     public function up()
     {
-        Schema::create('comments', function (Blueprint $table) {
-            $table->id();
-            $table->unsignedBigInteger('post_id');
-            $table->unsignedBigInteger('profile_id');
-            $table->text('comment');
-            $table->timestamps();
+        Schema::create('follow_table', function (Blueprint $table) {
+            $table->unsignedBigInteger('following_id');
+            $table->unsignedBigInteger('followed_id');
         });
     }
 
@@ -29,6 +26,6 @@ return new class extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('comments');
+        //
     }
 };

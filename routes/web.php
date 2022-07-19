@@ -1,7 +1,7 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
-
+use App\Models\Post;
 /*
 |--------------------------------------------------------------------------
 | Web Routes
@@ -14,8 +14,11 @@ use Illuminate\Support\Facades\Route;
 */
 
 Route::get('/', function () {
-    return view('welcome');
+    $post = Post::find(4);
+    return view('test',compact('post'));
 });
+
+Route::resource('test', App\Http\Controllers\TestController::class);
 
 Auth::routes();
 
