@@ -4,6 +4,8 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use App\Http\Resources\{FollowCollection,ProfileCollection};
+
 
 class Profile extends Model
 {
@@ -26,11 +28,17 @@ class Profile extends Model
     public function followings(){
         return $this->belongsToMany(Profile::class,'follow_table','following_id','followed_id');
     }
-
     public function followers(){
         return $this->belongsToMany(Profile::class,'follow_table','followed_id','following_id');
     }
     public function isFollowing($id){
         return $this->followings->contains($id);
+    }
+
+    public function getFollowings(){
+        return new FollowCollection($this->followings);
+    }
+    public function getFollowers(){
+        return new FollowCollection($this->followers);
     }
 }

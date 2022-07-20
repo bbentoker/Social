@@ -4,7 +4,7 @@ namespace App\Http\Resources;
 
 use Illuminate\Http\Resources\Json\JsonResource;
 
-class ProfileResource extends JsonResource
+class FollowResource extends JsonResource
 {
     /**
      * Transform the resource into an array.
@@ -20,9 +20,7 @@ class ProfileResource extends JsonResource
             'title' => $this->title,
             'description' => $this->description,
             'url' => $this->url,
-            'image' => $this->image,
-            'followings' => new FollowCollection($this->followings),
-            'followers' => new FollowCollection($this->followers),
+            'image' => $this->image
         ];
     }
 }

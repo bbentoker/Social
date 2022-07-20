@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
+use Intervention\Image\Facades\Image;
 use App\Http\Resources\{UserResource,UserCollection};
 
 class UserController extends Controller
@@ -58,7 +59,7 @@ class UserController extends Controller
             'name' => $request->name ?? $user->name,
             'email' => $request->email ?? $user->email,
             'password' => Hash::make($request->password) ?? $user->password,
-            'photo' => $path ?? $user->name,
+            'photo' => $path ?? $user->photo,
         ]);
 
         return new UserResource($user);

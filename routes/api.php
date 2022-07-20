@@ -17,10 +17,6 @@ Route::middleware('auth:api')->group(function () {
     
     Route::apiResource('users',UserController::class);
     
-    Route::apiResource('profiles',ProfileController::class);
-    // Route::controller(ProfileController::class)->group(function(){
-    //     Route::get('/profile','index');
-    //     Route::get()
-    // });
-
+    Route::apiResource('profiles',ProfileController::class);    
+    
 });
