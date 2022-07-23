@@ -4,7 +4,7 @@ namespace App\Http\Resources;
 
 use Illuminate\Http\Resources\Json\JsonResource;
 
-class ProfileResource extends JsonResource
+class CommentOwnerResource extends JsonResource
 {
     /**
      * Transform the resource into an array.
@@ -16,14 +16,8 @@ class ProfileResource extends JsonResource
     {
         return [
             'id' => $this->id,
-            'username' => $this->username,
-            'title' => $this->title,
-            'description' => $this->description,
-            'url' => $this->url,
+            'username' => $this->username, 
             'image' => $this->image,
-            'followings' => new FollowCollection($this->followings),
-            'followers' => new FollowCollection($this->followers),
-            'post' => new PostCollection($this->posts) 
         ];
     }
 }
