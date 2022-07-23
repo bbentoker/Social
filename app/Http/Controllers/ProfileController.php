@@ -25,11 +25,11 @@ class ProfileController extends Controller
     
     public function update(Request $request, Profile $profile)
     {
+        //url regex,not working properly
+        $regex = '/^(https?:\/\/)?([\da-z\.-]+)\.([a-z\.]{2,6})([\/\w \.-]*)*\/?$/';
+        
         //validations
         $this->authorize('update',$profile);
-        
-        //url regex 
-        $regex = '/^(https?:\/\/)?([\da-z\.-]+)\.([a-z\.]{2,6})([\/\w \.-]*)*\/?$/';
         
         request()->validate([
             'username' => 'max:50|unique:profiles',
@@ -40,7 +40,7 @@ class ProfileController extends Controller
         ]);
         
         //update operation
-
+        
         if(request('image')){
             
             $path = request()->file('image')->store('uploads','public');

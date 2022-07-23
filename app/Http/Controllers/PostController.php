@@ -3,82 +3,69 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use Intervention\Image\Facades\Image;
+use App\Models\{Post};
+use App\Http\Resources\{PostResource,PostCollection};
 
 class PostController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
     public function index()
     {
-        
+        $user = request()->user();
+        return new PostCollection($user->profile->posts);
     }
 
-    /**
-     * Show the form for creating a new resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function create()
-    {
-        //
-    }
-
-    /**
-     * Store a newly created resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\Response
-     */
+    
     public function store(Request $request)
     {
-        //
+        request()->validate([
+            'caption' => 'required|max:255',
+            'image' => 'required|mimes:jpeg,jpg,png,gif|max:10000'
+        ]);
+
+        $path = request()->file('image')->store('uploads/posts','public');
+
+        $image = Image::make($request->file('image')->getRealPath());
+        
+        $image->save('.png');        
+
+        $profile = request()->user()->profile;
+
+        $post = $profile->posts()->create([
+            'caption' => request()->caption,
+            'image' => $path
+        ]);
+
+        return new PostResource($post);
+
     }
 
-    /**
-     * Display the specified resource.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function show($id)
+    
+    public function show(Post $post)
     {
-        return view('post.show');
+        return new PostResource($post);
     }
 
-    /**
-     * Show the form for editing the specified resource.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function edit($id)
+     
+    public function update(Request $request,Post $post)
     {
-        //
+        //validations
+        $this->authorize('update',$post);
+        
+        request()->validate([
+            'caption' => 'max:255',
+        ]);
+
+        $post->update([
+            'caption' => request()->caption ?? $post->caption
+        ]);
+
+        return new PostResource($post);
     }
 
-    /**
-     * Update the specified resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function update(Request $request, $id)
-    {
-        //
-    }
-
-    /**
-     * Remove the specified resource from storage.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
+    
     public function destroy($id)
     {
-        //
+        
     }
 }
