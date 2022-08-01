@@ -13,7 +13,10 @@ return new class extends Migration
      */
     public function up()
     {
-        //
+        Schema::create('follow_table', function (Blueprint $table) {
+            $table->unsignedBigInteger('following_id');
+            $table->unsignedBigInteger('followed_id');
+        });
     }
 
     /**
@@ -23,6 +26,6 @@ return new class extends Migration
      */
     public function down()
     {
-        //
+        Schema::drop('follow_table');
     }
 };
