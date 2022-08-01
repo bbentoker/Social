@@ -20,12 +20,7 @@ Route::get('/test1',function(){
 });
 
 Route::get('/test2',function(){
-    return Inertia::render('Welcome', [
-        'canLogin' => Route::has('login'),
-        'canRegister' => Route::has('register'),
-        'laravelVersion' => Application::VERSION,
-        'phpVersion' => PHP_VERSION,
-    ]);
+    return Inertia::render('Test');
 });
 
 Route::get('/', function () {
