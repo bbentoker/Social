@@ -16,7 +16,6 @@ class ProfileController extends Controller
     
     public function index()
     {
-        return "This is the response from the api controller";
         $user = request()->user();
         return new ProfileResource($user->profile);
     }
