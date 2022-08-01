@@ -74,6 +74,12 @@ class ProfileController extends Controller
     public function follow(Profile $profile){
         $user = request()->user();
 
+        if($user->profile->id == $profile->id){
+            return response()->json([
+                'message' => 'You can not follow your own profile.'
+            ], 417);
+        }
+
         if($user->profile->isFollowing($profile)){
             return response()->json([
                 'message' => 'You are already following this profile.'
@@ -87,6 +93,12 @@ class ProfileController extends Controller
     }
     public function unfollow(Profile $profile){
         $user = request()->user();
+
+        if($user->profile->id == $profile->id){
+            return response()->json([
+                'message' => 'You can not unfollow your own profile.'
+            ], 417);
+        }
 
         if(!$user->profile->isFollowing($profile)){
             return response()->json([
