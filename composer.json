@@ -57,7 +57,8 @@
             "chmod -R 777 public/",
             "chmod -R 777 storage", 
             "php artisan passport:keys",
-            "ln -sr storage/app/public public/storage"
+            "ln -sr storage/app/public public/storage",
+            "php artisan passport:install"
         ]
     },
     "extra": {
