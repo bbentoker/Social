@@ -56,6 +56,7 @@ class ProfileController extends Controller
             
             Storage::disk('s3')->setVisibility($path, 'public');
             
+            $url = Storage::disk('s3')->url($path);
         }
 
         $user = $request->user();
@@ -65,7 +66,7 @@ class ProfileController extends Controller
             'title' => $request->title ?? $profile->title,
             'description' => $request->description ?? $profile->description,
             'url' => $request->url ?? $profile->url,
-            'image' => $path ?? $profile->image,
+            'image' => $url ?? $profile->image,
         ]);
 
         return new ProfileResource($user->profile);

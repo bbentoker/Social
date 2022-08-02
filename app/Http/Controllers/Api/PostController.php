@@ -40,11 +40,13 @@ class PostController extends Controller
         
         Storage::disk('s3')->setVisibility($path, 'public');
 
+        $url = Storage::disk('s3')->url($path);
+
         $profile = request()->user()->profile;
 
         $post = $profile->posts()->create([
             'caption' => request()->caption,
-            'image' => $path
+            'image' => $url
         ]);
 
         return new PostResource($post);
