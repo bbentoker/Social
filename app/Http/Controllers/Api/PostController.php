@@ -8,6 +8,7 @@ use Illuminate\Http\Request;
 use Intervention\Image\Facades\Image;
 use App\Models\{Post};
 use App\Http\Resources\{PostResource,PostCollection,CommentResource,CommentCollection};
+use Illuminate\Support\Facades\Storage;
 
 class PostController extends Controller
 {
@@ -28,11 +29,16 @@ class PostController extends Controller
             'image' => 'required|mimes:jpeg,jpg,png|max:10000'
         ]);
 
-        $path = request()->file('image')->store('uploads/posts','public');
-
-        $image = Image::make($request->file('image')->getRealPath());
+        $path = request('image')->store('uploads','s3');
+            
+        $img = Image::make(request('image'));
+        $img->resize(320, 240);   
         
-        $image->save('.png');        
+        $img = $img->stream();
+        
+        Storage::disk('s3')->put($path,$img->__toString());
+        
+        Storage::disk('s3')->setVisibility($path, 'public');
 
         $profile = request()->user()->profile;
 

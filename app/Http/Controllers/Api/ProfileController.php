@@ -9,7 +9,7 @@ use Illuminate\Support\Facades\Auth;
 use Intervention\Image\Facades\Image;
 use App\Models\{Profile};
 use App\Http\Resources\{ProfileResource,ProfileCollection};
-
+use Illuminate\Support\Facades\Storage;
 
 class ProfileController extends Controller
 {
@@ -43,13 +43,19 @@ class ProfileController extends Controller
         
         //update operation
         
-        if(request('image')){
+        if(request('image')){     
             
-            $path = request()->file('image')->store('uploads','public');
-
-            $image = Image::make($request->file('image')->getRealPath());
+            $path = request('image')->store('uploads','s3');
             
-            $image->save('.png');            
+            $img = Image::make(request('image'));
+            $img->resize(320, 240);   
+            
+            $img = $img->stream();
+            
+            Storage::disk('s3')->put($path,$img->__toString());
+            
+            Storage::disk('s3')->setVisibility($path, 'public');
+            
         }
 
         $user = $request->user();

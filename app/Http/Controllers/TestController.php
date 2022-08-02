@@ -1,9 +1,10 @@
 <?php
 
-namespace App\Http\Controllers\Api;
+namespace App\Http\Controllers;
 
-use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\File;
+use Illuminate\Support\Facades\Storage;
 
 class TestController extends Controller
 {
@@ -16,14 +17,9 @@ class TestController extends Controller
     {
         $path = $request->file('image')->store('images', 's3');
 
-        Storage::disk('s3')->setVisibility($path, 'private');
+        Storage::disk('s3')->setVisibility($path, 'public');
 
-        $image = Image::create([
-            'filename' => basename($path),
-            'url' => Storage::disk('s3')->url($path)
-        ]);
-
-        return $image;
+        return Storage::disk('s3')->url($path);
     }
 
     public function show(Image $image)
