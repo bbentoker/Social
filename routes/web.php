@@ -13,11 +13,17 @@ Route::get('/', function () {
         'laravelVersion' => Application::VERSION,
         'phpVersion' => PHP_VERSION,
     ]);
-});
+})->name('index');
 Route::get('/dashboard', function () {
-    
-    return Inertia::render('Dashboard');
+
+    return redirect()->route('home');
+    // return Inertia::render('Dashboard');
 })->middleware(['auth', 'verified'])->name('dashboard');
 
+Route::get('/home',function(){
+    return Inertia::render('Home');
+})->name('home');
+
 require __DIR__.'/auth.php';
+
 

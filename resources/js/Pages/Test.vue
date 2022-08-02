@@ -1,1 +1,0 @@
-<template>This page is nothing but a single vue template</template>
