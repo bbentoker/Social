@@ -1,3 +1,3 @@
 <template>
-    <img src="logo.png" style="border-radius: 50%;">
+    <img src="/logo.png" style="border-radius: 50%;">
 </template>

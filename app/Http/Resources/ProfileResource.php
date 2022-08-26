@@ -21,9 +21,11 @@ class ProfileResource extends JsonResource
             'description' => $this->description,
             'url' => $this->url,
             'image' => $this->image,
+            'following_count' => $this->followings->count(),
+            'follower_count' => $this->followers->count(),
             'followings' => new FollowCollection($this->followings),
             'followers' => new FollowCollection($this->followers),
-            'post' => new PostCollection($this->posts) 
+            'posts' => new PostCollection($this->posts) 
         ];
     }
 }

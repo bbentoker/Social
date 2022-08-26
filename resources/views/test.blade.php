@@ -8,7 +8,6 @@
 </head>
 <body>
     <h1>Hey</h1>
-    <img src="{{$image}}" alt="">
     
 </body>
 </html>

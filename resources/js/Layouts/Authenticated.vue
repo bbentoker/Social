@@ -6,6 +6,8 @@ import BreezeDropdownLink from '@/Components/DropdownLink.vue';
 import BreezeNavLink from '@/Components/NavLink.vue';
 import BreezeResponsiveNavLink from '@/Components/ResponsiveNavLink.vue';
 import { Link } from '@inertiajs/inertia-vue3';
+import SearchBar from '@/Components/SearchBar.vue';
+
 
 const showingNavigationDropdown = ref(false);
 </script>
@@ -30,9 +32,17 @@ const showingNavigationDropdown = ref(false);
                                 <BreezeNavLink :href="route('home')" :active="route().current('home')">
                                     Home
                                 </BreezeNavLink>
+                                
                             </div>
                         </div>
-
+                        
+                        <!-- SearchBar -->
+                        <div class="flex">
+                            <div class="flex items-center">
+                                <SearchBar />
+                            </div>
+                        </div>
+                        
                         <div class="hidden sm:flex sm:items-center sm:ml-6">
                             <!-- Settings Dropdown -->
                             <div class="ml-3 relative">
@@ -50,10 +60,14 @@ const showingNavigationDropdown = ref(false);
                                     </template>
 
                                     <template #content>
+                                        <BreezeDropdownLink :href="route('profiles.index')" method="get" as="button">
+                                            Profile
+                                        </BreezeDropdownLink>
                                         <BreezeDropdownLink :href="route('logout')" method="post" as="button">
                                             Log Out
                                         </BreezeDropdownLink>
                                     </template>
+                                    
                                 </BreezeDropdown>
                             </div>
                         </div>
@@ -90,6 +104,7 @@ const showingNavigationDropdown = ref(false);
                                 Log Out
                             </BreezeResponsiveNavLink>
                         </div>
+                        
                     </div>
                 </div>
             </nav>

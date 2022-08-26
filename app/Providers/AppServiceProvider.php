@@ -4,6 +4,7 @@ namespace App\Providers;
 
 use Illuminate\Support\ServiceProvider;
 use Illuminate\Support\Facades\App;
+use App\Http\Resources\{ProfileResource,PostResource,PostCollection,ProfileCollection};
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -24,8 +25,10 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot()
     {   
+        ProfileResource::withoutWrapping();
+        PostCollection::withoutWrapping();
         if (!App::environment('local')) {
-            \URL::forceScheme('https');
+            \URL::forceScheme('http');
         }
     }
 }

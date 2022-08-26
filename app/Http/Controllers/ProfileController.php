@@ -1,47 +1,98 @@
 <?php
 
-namespace App\Http\Controllers\Api;
-
-use App\Http\Controllers\Controller;
+namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
+use Inertia\Inertia;
+use Illuminate\Support\Facades\{Auth,Hash,Storage};
+use App\Http\Resources\{ProfileResource,ProfileCollection,UserResource};
+use App\Models\{User,Profile};
+use Illuminate\Validation\Rule;
 use Intervention\Image\Facades\Image;
-use App\Models\{Profile};
-use App\Http\Resources\{ProfileResource,ProfileCollection};
-use Illuminate\Support\Facades\Storage;
 
 class ProfileController extends Controller
 {
     
+    
     public function index()
-    {
-        $user = request()->user();
-        return new ProfileResource($user->profile);
+    {   
+        $user = Auth::user();
+        
+        $profile = new ProfileResource($user->profile);
+
+        $link = route('profiles.edit',$user->profile->id);
+        
+        return Inertia::render('Profile/Index',[
+            'Profile' => $profile, 
+            'Link' => $link
+        ]);
     }
+
+    
+    
+    public function create()
+    {
+        
+    }
+
+    
+    
+    public function store(Request $request)
+    {
+        //
+    }
+
+    
     
     public function show(Profile $profile)
-    {
-        return new ProfileResource($profile);
+    {   
+        $followLink = route('profiles.follow',$profile->id);
+        $unfollowLink = route('profiles.unfollow',$profile->id);
+
+        return Inertia::render('Profile/Show',[
+            'Profile' => new ProfileResource($profile),
+            'FollowLink' => $followLink,
+            'UnfollowLink' => $unfollowLink
+        ]);
     }
+
+    
+    
+    public function edit(Profile $profile)
+    {   
+        $auth = Auth::user();
+         
+        if($auth->id !== $profile->user_id){
+            return redirect()->route('profiles.show',$profile->id);
+        }
+        
+        $profile = new ProfileResource($auth->profile);
+
+        $updateUrl = route('profiles.update',$auth->profile->id);
+
+        return Inertia::render('Profile/Edit',[
+            'Profile' => $profile, 
+            'User' => new UserResource($auth),
+            'UpdateUrl' => $updateUrl
+        ]);
+    }
+
+    
     
     public function update(Request $request, Profile $profile)
-    {
-        //url regex,not working properly
-        $regex = '/^(https?:\/\/)?([\da-z\.-]+)\.([a-z\.]{2,6})([\/\w \.-]*)*\/?$/';
-        
-        //validations
+    {   
+
         $this->authorize('update',$profile);
-        
+
         request()->validate([
-            'username' => 'max:50|unique:profiles',
-            'title' => 'max:255',
-            'description' => 'max:255',
-            'url' => 'regex:'.$regex,
-            'image' => 'mimes:jpeg,jpg,png|max:10000'
+            'username' =>  Rule::unique('profiles')->ignore($profile),
+            'title' => 'max:50|nullable',
+            'description' => 'max:255|nullable',
+            'url' => 'url|nullable',
+            'email' => 'email|max:255',
+            'password' => 'min:8|confirmed|nullable',
+            'image' => 'mimes:jpeg,jpg,png|max:10000|nullable'
         ]);
-        
-        //update operation
         
         if(request('image')){     
             
@@ -59,8 +110,8 @@ class ProfileController extends Controller
             $url = Storage::disk('s3')->url($path);
         }
 
-        $user = $request->user();
-        
+        $user = Auth::user();
+
         $user->profile()->update([
             'username' => $request->username ?? $profile->username,
             'title' => $request->title ?? $profile->title,
@@ -69,17 +120,24 @@ class ProfileController extends Controller
             'image' => $url ?? $profile->image,
         ]);
 
-        return new ProfileResource($user->profile);
-
+        $user->update([
+            'email' => $request->email ?? $user->email,
+            'password' => Hash::make($request->password) ?? $user->password,
+        ]);
+        
+        return redirect()->route('profiles.index');
     }
+
+    
     
     public function destroy($id)
     {
-        
+        //
     }
-    
+
     public function follow(Profile $profile){
-        $user = request()->user();
+        dd("follow");
+        $user = Auth::user();
 
         if($user->profile->id == $profile->id){
             return response()->json([
@@ -98,8 +156,10 @@ class ProfileController extends Controller
             'message' => 'You are currently following this profile.'
         ], 200);
     }
+
     public function unfollow(Profile $profile){
-        $user = request()->user();
+        dd("unfollow");
+        $user = Auth::user();
 
         if($user->profile->id == $profile->id){
             return response()->json([
