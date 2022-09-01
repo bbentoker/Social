@@ -2,10 +2,48 @@
 import BreezeAuthenticatedLayout from "@/Layouts/Authenticated.vue";
 import { Head } from "@inertiajs/inertia-vue3";
 import { Link } from "@inertiajs/inertia-vue3";
+import { ref } from "vue";
 
-const props = defineProps(["Profile", "Link"]);
+const props = defineProps([
+    "Profile",
+    "IsFollowing",
+    "FollowLink",
+    "UnfollowLink",
+    "Token"
+]);
+
 const profile = props.Profile;
-const link = props.Link;
+const token = props.Token
+const isFollowing = ref(props.IsFollowing);
+const followLink = props.FollowLink;
+const unfollowLink = props.UnfollowLink;
+
+function follow() {
+    fetch(followLink, {
+        method: "POST",
+        headers: {
+        'X-CSRF-TOKEN': token
+    }
+    })
+        .then((response) => {
+            if (response.ok) {
+                isFollowing.value = true;
+            }
+        })
+}
+function unfollow() {
+    fetch(unfollowLink, {
+        method: "POST",
+        headers: {
+        'X-CSRF-TOKEN': token
+    }
+    })
+    .then((response) => {
+            if (response.ok) {
+                isFollowing.value = false;
+            }
+        }) 
+}
 </script>
 
 <template>
@@ -31,13 +69,16 @@ const link = props.Link;
                                                 {{ profile.username }}
                                             </div>
                                             <div class="basis-1/4">
-                                                <Link :href="link">
-                                                    <button
-                                                        class="bg-blue-500 px-5 py-2 font-sans text-sm rounded text-white hover:bg-blue-600"
-                                                    >
-                                                        Edit
-                                                    </button>
-                                                </Link>
+                                                <button
+                                                    class="bg-blue-500 px-5 py-2 font-sans text-sm rounded text-white hover:bg-blue-600"
+                                                    @click="
+                                                        isFollowing
+                                                            ? unfollow()
+                                                            : follow()
+                                                    "
+                                                >
+                                                    {{isFollowing ? 'Unfollow' : 'Follow'}}
+                                                </button>
                                             </div>
                                         </div>
                                     </div>
@@ -50,9 +91,7 @@ const link = props.Link;
                                     <div class="basis-1/3 text-sm mt-8">
                                         <b
                                             >followers
-                                            {{
-                                                profile.follower_count
-                                            }}
+                                            {{ profile.follower_count }}
                                             following
                                             {{ profile.following_count }}</b
                                         >
@@ -62,18 +101,32 @@ const link = props.Link;
                         </div>
                         <hr />
                         <div class="m-5 grid grid-cols-3 gap-4">
-                                <Link :href="route('posts.create')">
-                                    <!-- center an image vertically and horizontally in this container -->
-                                    <div class="flex items-center justify-center border-solid border-2">
-                                        <div style="height: 20rem;">
-                                            <img src="/plus.png" style="height: 10rem;margin-top:5rem;">
-                                        </div>
+                            <Link :href="route('posts.create')">
+                                <!-- center an image vertically and horizontally in this container -->
+                                <div
+                                    class="flex items-center justify-center border-solid border-2"
+                                >
+                                    <div style="height: 20rem">
+                                        <img
+                                            src="/plus.png"
+                                            style="
+                                                height: 10rem;
+                                                margin-top: 5rem;
+                                            "
+                                        />
                                     </div>
-
-                                </Link>
-                            <div v-for="post in profile.posts" :key="post.id" class="border-solid border-2">
+                                </div>
+                            </Link>
+                            <div
+                                v-for="post in profile.posts"
+                                :key="post.id"
+                                class="border-solid border-2"
+                            >
                                 <Link :href="route('posts.show', post.id)">
-                                    <img v-bind:src="post.image" style="height: 20rem;" />
+                                    <img
+                                        v-bind:src="post.image"
+                                        style="height: 20rem"
+                                    />
                                 </Link>
                             </div>
                         </div>

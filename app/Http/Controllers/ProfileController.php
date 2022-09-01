@@ -46,13 +46,22 @@ class ProfileController extends Controller
     
     public function show(Profile $profile)
     {   
+                
+        $user = Auth::user();
+        
+        $isFollowing = $user->profile->isFollowing($profile);
+        
         $followLink = route('profiles.follow',$profile->id);
         $unfollowLink = route('profiles.unfollow',$profile->id);
 
+        $token = csrf_token();
+
         return Inertia::render('Profile/Show',[
             'Profile' => new ProfileResource($profile),
+            'IsFollowing' => $isFollowing,  
             'FollowLink' => $followLink,
-            'UnfollowLink' => $unfollowLink
+            'UnfollowLink' => $unfollowLink,
+            'Token' => $token
         ]);
     }
 
@@ -136,7 +145,7 @@ class ProfileController extends Controller
     }
 
     public function follow(Profile $profile){
-        dd("follow");
+
         $user = Auth::user();
 
         if($user->profile->id == $profile->id){
@@ -158,7 +167,6 @@ class ProfileController extends Controller
     }
 
     public function unfollow(Profile $profile){
-        dd("unfollow");
         $user = Auth::user();
 
         if($user->profile->id == $profile->id){
